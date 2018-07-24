@@ -10,6 +10,7 @@
             [clj-json.core :as json]
             [clojure.tools.cli :as cli]
             [clj-yaml.core :as yaml])
+  (:use [clojure.java.shell :only [sh]])
   (:gen-class))
 
 (def num-campaigns 100)
@@ -242,6 +243,7 @@
       (let [campaigns (make-ids num-campaigns)
             ads (into [] (make-ids (* num-campaigns 10)))]
         (write-to-redis campaigns ads (conf :redis-host))
+        (sh "~/create-input-file.sh")
         (write-to-kafka ads (conf :kakfa-brokers))
         (write-ids campaigns ads))
       (write-to-redis campaigns ads))))
